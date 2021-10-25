@@ -14,9 +14,11 @@ from IPython.display import display, Math, Latex
 # http://www.universalteacherpublications.com/univ/ebooks/or/Ch1/techniq.htm
 # https://towardsdatascience.com/optimization-in-transportation-problem-f8137044b371
 
+# 我听见 我忘记; 我看见 我记住; 我做 我了解
+
 def set_streamlit():
     st.set_page_config(
-    page_title = "Pesquisa Operacional",
+    page_title = "PO",
     page_icon = "📉",
     layout = "wide",)
 
@@ -32,13 +34,10 @@ def set_streamlit():
 
 def gerar_exemplos(exemplo_escolhido):
 
-    exemplo1 = """Modelo Simples
-
+    exemplo1 = """
 problema: linear
 
-objetivo: maximizar
-
-funcao: 8x1 + 10x2
+max: 8x1 + 10x2
 
 restricao: 0.5x1 + 0.5x2 <= 150
 restricao: 0.6x1 + 0.4x2 <= 145
@@ -46,13 +45,10 @@ restricao: 0.6x1 + 0.4x2 <= 145
 restricao:  x1 >= 30                                            restricao: x1 <= 150
 restricao:  x2 >= 40                                            restricao: x2 <= 200 """
 
-    exemplo2 = """Transporte
-
+    exemplo2 = """
 problema: inteiro
 
-obj: minimizar 
-
-funcao: x111 + 2x121 + 3x131 + 2x141 + 2x112 + 4x122 + 6x132 + 4x142 + 2x211 + 4x221 + 1x231 + 2x241 + 4x212 + 8x222 + 2x232 + 4x242 + 1x311 + 3x321 + 5x331 + 3x341
+min: x111 + 2x121 + 3x131 + 2x141 + 2x112 + 4x122 + 6x132 + 4x142 + 2x211 + 4x221 + 1x231 + 2x241 + 4x212 + 8x222 + 2x232 + 4x242 + 1x311 + 3x321 + 5x331 + 3x341
 
 r: x111 + x121 + x131 + x141 <= 150
 r: x112 + x122 + x132 + x142 <= 90 
@@ -64,13 +60,11 @@ r: x121 + x122 + x221 + x222 + x321 = 150
 r: x131 + x132 + x231 + x232 + x331 = 400
 r: x141 + x142 + x241 + x242 + x341 = 100 """
     
-    exemplo3 = """Programação Binária
-
+    exemplo3 = """
 p: inteiro
 
-o: maximizar
+MAX: 9x1 + 5x2 + 6x3 + 4x4
 
-f: 9x1 + 5x2 + 6x3 + 4x4
 r: 6x1 + 3x2 + 5x3 + 2x4 <= 10
 r: x3 + x4 <= 1 
 
@@ -83,17 +77,15 @@ r: x1 - x3 <= 1                                        r: x2 - x4 <= 1
 restricao: x1 <= 1                                                restricao: x2 <= 1 
 restricao: x3 <= 1                                                restricao: x4 <= 1  """
 
-    exemplo4 = """Designação
-
+    exemplo4 = """
 problema: inteiro
 
-funcao:  50x11 + 50x12 + 0x13 + 20x14
+MIN:  50x11 + 50x12 + 0x13 + 20x14
         + 70x21 + 40x22 + 20x23 + 30x24                 
         + 90x31 + 30x32 + 50x33 +  0x34                  
         + 70x41 + 20x42 + 60x43 + 70x44                
 Simulando uma matriz de designação de tarefas para o problema
-problema, objetivo, função objetivo e restrições podem ser declaradas em qualquer lugar, contanto que as regras de uso sejam obedecidas!        
-objetivo: minimizar
+problema, função objetivo e restrições podem ser declaradas em qualquer lugar, contanto que as regras de uso sejam obedecidas!        
 
 restricao: x11 + x12 + x14 = 1
 restricao: x21 + x22 + x23 + x24 = 1
@@ -105,13 +97,10 @@ restricao: x12 + x22 + x32 + x42 = 1
 restricao: x13 + x23 + x33 + x43 = 1
 restricao: x14 + x24 + x34 + x44 = 1 """
     # EXEMPLO COM ERRO DE FORMULAÇÃO
-    exemplo5 = """Terceirizar ou não?
-
+    exemplo5 = """Esse modelo não apresenta solução 
 problema: inteiro
 
-objetivo: minimizar
-
-funcao: 36x11 + 44x12 + 69x13 + 44x21 + 56x22 + 72x23
+min: 36x11 + 44x12 + 69x13 + 44x21 + 56x22 + 72x23
 
 restricao: 1.1x11 + 1.1x12 + 1.2x13 <= 4000
 restricao: 1.1x11 + 1x12 + 1.1x13 <= 3500
@@ -134,7 +123,7 @@ restricao: x21 <= 1                     restricao: x22 <= 1                     
 
 def processar_input(texto):
 
-    regra = r'(?:(?:restricao:|r:)(?:(?<!\+|\-|\.)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,4}[\+\-\s])+(?:[=><]{1,2}[\-\+\s]+\d+(?!\|;\w|\d)))|(?:(?:funcao:|f:)(?:(?<!\+|\-)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,3}[\+\-\s])+(?!\|;\w|\d))|(?:(?:objetivo:|obj:|o:)(?:(?<!\+|\-)[\+\-\s](?:maximizar|minimizar|max|min)[\+\-\s])+(?!\|;\w|\d))|(?:(?:problema:|p:)(?:(?<!\+|\-)[\+\-\s](?:inteiro|linear|int|lin)[\+\-\s])+(?!\|;\w|\d))'
+    regra = r'(?:(?:restricao:|r:)(?:(?<!\+|\-|\.)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,4}[\+\-\s])+(?:[=><]{1,2}[\-\+\s]+\d+(?!\|;\w|\d)))|(?:(?:min:|max:)(?:(?<!\+|\-)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,3}[\+\-\s])+(?!\|;\w|\d))|(?:(?:problema:|p:)(?:(?<!\+|\-)[\+\-\s](?:inteiro|linear|int|lin)[\+\-\s])+(?!\|;\w|\d))'
 
     doc = texto
 
@@ -144,13 +133,13 @@ def processar_input(texto):
 
     restricoes = [item for item in coletor if (('restricao:' in item) or ('r:' in item))]
 
-    func_obj = [item for item in coletor if (('funcao:' in item) or ('f:' in item))]
+    func_obj = [item for item in coletor if (('min:' in item) or ('max:' in item))]
 
     for item in coletor:
-        if (('maximizar' in item) or ('max' in item)):
+        if 'max' in item:
             objetivo = 'max'
 
-        elif (('minimizar' in item) or ('min' in item)):
+        elif 'min' in item:
             objetivo = 'min'
 
         if (('inteiro' in item) or ('int' in item)):
@@ -216,7 +205,6 @@ def processar_input(texto):
 
             item = [i for i in lista if 'x' in i]
             restr.append(item)
-
 
     lista = [i.replace(" ", "") for i in func_obj[0].split()]
 
@@ -357,7 +345,7 @@ def solve_problem(df, coef_objetivo, metodo, objetivo):
     for j in range(data['num_vars']):
         objective.SetCoefficient(x[j], data['obj_coeffs'][j])
 
-    if objetivo == 'max':    
+    if objetivo=='max':    
         objective.SetMaximization()
 
     else:   
@@ -444,7 +432,6 @@ def main():
 
         solve_problem(df, coef_objetivo, metodo, objetivo)
         
-    return 0
     
 if __name__ == "__main__":
     set_streamlit()
