@@ -34,6 +34,8 @@ def gerar_exemplos(exemplo_escolhido):
 
     exemplo1 = """Modelo Simples
 
+problema: linear
+
 objetivo: maximizar
 
 funcao: 8x1 + 10x2
@@ -44,7 +46,9 @@ restricao: 0.6x1 + 0.4x2 <= 145
 restricao:  x1 >= 30                                            restricao: x1 <= 150
 restricao:  x2 >= 40                                            restricao: x2 <= 200 """
 
-    exemplo2 = """Problema de Transporte
+    exemplo2 = """Transporte
+
+problema: inteiro
 
 obj: minimizar 
 
@@ -62,6 +66,8 @@ r: x141 + x142 + x241 + x242 + x341 = 100 """
     
     exemplo3 = """Programação Binária
 
+p: inteiro
+
 o: maximizar
 
 f: 9x1 + 5x2 + 6x3 + 4x4
@@ -77,16 +83,17 @@ r: x1 - x3 <= 1                                        r: x2 - x4 <= 1
 restricao: x1 <= 1                                                restricao: x2 <= 1 
 restricao: x3 <= 1                                                restricao: x4 <= 1  """
 
-    exemplo4 = """Problema de Designação
+    exemplo4 = """Designação
 
-Função objetivo e Restrições podem ser escritas da forma que achar mais adequado e conveniente
-Aqui simulamos a matriz gerada pela tabela de designação de tarefas desse problema:
-funcao: 50x11 + 50x12 + 0x13 + 20x14
-           + 70x21 + 40x22 + 20x23 + 30x24
-           + 90x31 + 30x32 + 50x33 + 0x34
-           + 70x41 + 20x42 + 60x43 + 70x44    
+problema: inteiro
 
-!!!Objetivo, Função Objetivo e Restrições podem ser declaradas em qualquer lugar, contanto que as regras de uso sejam obedecidas!        objetivo: minimizar
+funcao:  50x11 + 50x12 + 0x13 + 20x14
+        + 70x21 + 40x22 + 20x23 + 30x24                 
+        + 90x31 + 30x32 + 50x33 +  0x34                  
+        + 70x41 + 20x42 + 60x43 + 70x44                
+Simulando uma matriz de designação de tarefas para o problema
+problema, objetivo, função objetivo e restrições podem ser declaradas em qualquer lugar, contanto que as regras de uso sejam obedecidas!        
+objetivo: minimizar
 
 restricao: x11 + x12 + x14 = 1
 restricao: x21 + x22 + x23 + x24 = 1
@@ -97,8 +104,10 @@ restricao: x11 + x21 + x31 + x41 = 1
 restricao: x12 + x22 + x32 + x42 = 1
 restricao: x13 + x23 + x33 + x43 = 1
 restricao: x14 + x24 + x34 + x44 = 1 """
-    # EXEMPLO DUVIDOSO
+    # EXEMPLO COM ERRO DE FORMULAÇÃO
     exemplo5 = """Terceirizar ou não?
+
+problema: inteiro
 
 objetivo: minimizar
 
@@ -115,16 +124,13 @@ As restrições podem ser colocadas na mesma linha, contanto que as regras de us
 restricao: x11 <= 1                     restricao: x12 <= 1                     restricao: x13 <= 1
 restricao: x21 <= 1                     restricao: x22 <= 1                     restricao: x23 <= 1 """
 
-    if "1" in exemplo_escolhido:
-        return exemplo1
-    elif "2" in exemplo_escolhido:
-        return exemplo2
-    elif "3" in exemplo_escolhido:
-        return exemplo3
-    elif "4" in exemplo_escolhido:
-        return exemplo4
-    elif "5" in exemplo_escolhido:
-        return exemplo5
+    dict_exemplos = {"1) Modelo Básico":exemplo1,
+                    "2) Problema de Transporte":exemplo2,
+                    "3) Programação Binária":exemplo3,
+                    "4) Designação":exemplo4,
+                    "5) Terceirizar ou não?":exemplo5}
+
+    return dict_exemplos[exemplo_escolhido]
 
 def processar_input(texto):
 
@@ -146,6 +152,12 @@ def processar_input(texto):
 
         elif (('minimizar' in item) or ('min' in item)):
             objetivo = 'min'
+
+        if (('inteiro' in item) or ('int' in item)):
+            metodo = 'Programação Inteira'
+
+        elif (('linear' in item) or ('lin' in item)):
+            metodo = 'Programação Linear'
 
     coletor = set([item[item.find(':')+1:].strip() for item in coletor if len(set(item)) != 1])
     restricoes = [item[item.find(':')+1:].strip() for item in restricoes]
@@ -275,7 +287,7 @@ def processar_input(texto):
     #print(objetivo)
     #print(df)
 
-    return df, coef_obj, objetivo 
+    return df, coef_obj, objetivo, metodo 
 
 def create_data_model(df, coef_objetivo):
     """Salva os dados das entradas em estruturas para processamento"""
@@ -355,7 +367,7 @@ def solve_problem(df, coef_objetivo, metodo, objetivo):
 
     if status == pywraplp.Solver.OPTIMAL:
 
-        st.markdown('<p class="big-font">😸 Uma solução ótima foi encontrada!!! 😸</p>', unsafe_allow_html=True)
+        st.markdown('<p class="big-font">😻 Solução ótima encontrada!!! 😻</p>', unsafe_allow_html=True)
         st.write('Valor Otimizado da Função Objetivo =', super_solver.Objective().Value())
         
         variaveis = np.array(df.columns[:-2])
@@ -368,21 +380,31 @@ def solve_problem(df, coef_objetivo, metodo, objetivo):
         st.write('Problema resolvido em %d branch-and-bound nodes' % super_solver.nodes())
 
     else:
-        st.markdown('<p class="big-font">😿 O problema não tem uma solução ótima. 😿</p>', unsafe_allow_html=True)
+        st.markdown('<p class="big-font">😿 Não achamos solução 😿</p>', unsafe_allow_html=True)
 
 def main():
 
-    st.sidebar.title("Solver de PO")
-    st.sidebar.subheader("Configuração")
+    st.title("😾 Morte ao Solver do Excel 😾")
+    st.sidebar.subheader("😸 Exemplos")
 
-    metodo = st.sidebar.selectbox("Selecione o tipo de problema:",('Programação Linear', 'Programação Inteira'))
+    exemplo = st.sidebar.selectbox("Selecione:",("1) Modelo Básico","2) Problema de Transporte","3) Programação Binária","4) Designação","5) Terceirizar ou não?"))
 
-    exemplo = st.sidebar.selectbox("Veja um exemplo:",("1) Modelo Básico","2) Problema de Transporte","3) Programação Binária","4) Designação","5) Terceirizar ou não?"))
-    
+    st.sidebar.subheader("""😺 Regras de Uso
+    🐈 Use espaços entre os sinais de operação e as variáveis;
+    🐈‍⬛ Os coeficientes das variáveis devem estar "colados" nas variáveis (vide exemplos);
+    🐅 Não existe ordem certa para definir o modelo, contanto que tudo seja definido;
+    🐆 Variáveis devem ser mantidas no lado esquerdo;
+    🦖 Não usar frações;
+    🦕 Formas decimais são representadas com '.' (ponto) ao invés de vírgula.""")
+
+    st.sidebar.write("🐯 白玉龙的项目")
+
     texto_input = st.text_area('Preencha o modelo com os termos e sinais SEPARADOS POR ESPAÇOS',value = gerar_exemplos(exemplo), height = 500)
 
+    df, coef_objetivo, objetivo, metodo  = processar_input(texto_input)
+
     if metodo == 'Programação Linear':
-    
+        
         st.subheader("Programação Linear:")
         st.write(f'(PL): engloba problemas de otimização nos quais a função objetivo e as restrições são todas lineares.')
      
@@ -390,15 +412,11 @@ def main():
         # REVISAR
         st.subheader("Programação Inteira:")
         st.write(f'(PI): engloba problemas de otimização nos quais a função objetivo e as restrições são parcialmente ou totalmente pertencentes ao conjunto dos números inteiros.')
-    #st.subheader(f"Método: {metodo} | N° de variáveis: {num_var-1} | Objetivo: {objetivo}")
-    
-    df, coef_objetivo, objetivo  = processar_input(texto_input)
 
     a_series = pd.Series(coef_objetivo, index=df.columns[:-2])
     
     df_obj = pd.DataFrame(columns=df.columns[:-2])
     df_obj = df_obj.append(a_series, ignore_index=True)
-    #df_obj = pd.DataFrame(columns=df.columns[:-2]).append(list(coef_objetivo))
 
     st.subheader("Objetivo: ")
     st.write((objetivo+"imizar").upper())
@@ -408,7 +426,8 @@ def main():
 
     st.subheader("Restrições: ")
     st.dataframe(df)
-
+    
+    st.markdown('<p class="big-font">😺 PODE 😼 MANDAR 😾 BALA !!!</p>', unsafe_allow_html=True)
     #data = create_data_model(df, funcao_objetivo)
 
     #for i,row in enumerate(df['restricao']):
@@ -421,7 +440,7 @@ def main():
     #    #st.write(df['inequacao'].iloc[i])
     #    math_exp = Eq(math_exp, 0)
 
-    if st.sidebar.button("Resolver"): 
+    if st.button("Resolver"): 
 
         solve_problem(df, coef_objetivo, metodo, objetivo)
         
