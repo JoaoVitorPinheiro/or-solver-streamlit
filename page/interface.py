@@ -18,7 +18,7 @@ from IPython.display import display, Math, Latex
 
 def set_streamlit():
     st.set_page_config(
-    page_title = "PO",
+    page_title = "𝖱esolved𝖮𝖱",
     page_icon = "📉",
     layout = "wide",)
 
@@ -34,7 +34,8 @@ def set_streamlit():
 
 def gerar_exemplos(exemplo_escolhido):
 
-    exemplo1 = """
+    exemplo1 = """Modelo Simples de Programação Linear
+
 problema: linear
 
 max: 8x1 + 10x2
@@ -45,7 +46,8 @@ restricao: 0.6x1 + 0.4x2 <= 145
 restricao:  x1 >= 30                                            restricao: x1 <= 150
 restricao:  x2 >= 40                                            restricao: x2 <= 200 """
 
-    exemplo2 = """
+    exemplo2 = """Transporte
+
 problema: inteiro
 
 min: x111 + 2x121 + 3x131 + 2x141 + 2x112 + 4x122 + 6x132 + 4x142 + 2x211 + 4x221 + 1x231 + 2x241 + 4x212 + 8x222 + 2x232 + 4x242 + 1x311 + 3x321 + 5x331 + 3x341
@@ -60,7 +62,8 @@ r: x121 + x122 + x221 + x222 + x321 = 150
 r: x131 + x132 + x231 + x232 + x331 = 400
 r: x141 + x142 + x241 + x242 + x341 = 100 """
     
-    exemplo3 = """
+    exemplo3 = """Binária
+
 p: inteiro
 
 MAX: 9x1 + 5x2 + 6x3 + 4x4
@@ -77,7 +80,8 @@ r: x1 - x3 <= 1                                        r: x2 - x4 <= 1
 restricao: x1 <= 1                                                restricao: x2 <= 1 
 restricao: x3 <= 1                                                restricao: x4 <= 1  """
 
-    exemplo4 = """
+    exemplo4 = """Designação
+
 problema: inteiro
 
 MIN:  50x11 + 50x12 + 0x13 + 20x14
@@ -96,28 +100,52 @@ restricao: x11 + x21 + x31 + x41 = 1
 restricao: x12 + x22 + x32 + x42 = 1
 restricao: x13 + x23 + x33 + x43 = 1
 restricao: x14 + x24 + x34 + x44 = 1 """
-    # EXEMPLO COM ERRO DE FORMULAÇÃO
-    exemplo5 = """Esse modelo não apresenta solução 
+ 
+    exemplo5 = """Postes nas ruas
+
 problema: inteiro
 
-min: 36x11 + 44x12 + 69x13 + 44x21 + 56x22 + 72x23
+min: x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 
 
-restricao: 1.1x11 + 1.1x12 + 1.2x13 <= 4000
-restricao: 1.1x11 + 1x12 + 1.1x13 <= 3500
-restricao: x11 + x21 = 750
-restricao: x12 + x22 = 2000
-restricao: x13 + x23 = 1100
+restricao:  x1 + x2 >= 1          RUA A
+restricao:  x2 + x3 >= 1          RUA B
+restricao:  x4 + x5 >= 1          RUA C
+restricao:  x7 + x8 >= 1          RUA D
+restricao:  x6 + x7 >= 1          RUA E
+restricao:  x6 + x2 >= 1          RUA F
+restricao:  x6 + x1 >= 1          RUA G
+restricao:  x4 + x7 >= 1          RUA H
+restricao:  x4 + x2 >= 1          RUA I
+restricao:  x5 + x8 >= 1          RUA J
+restricao:  x3 + x5 >= 1          RUA K
 
-Para garantir que as variáveis sejam binárias (o limite inferior já é 0 para problemas de MAX)
-As restrições podem ser colocadas na mesma linha, contanto que as regras de uso sejam respeitadas
-restricao: x11 <= 1                     restricao: x12 <= 1                     restricao: x13 <= 1
-restricao: x21 <= 1                     restricao: x22 <= 1                     restricao: x23 <= 1 """
+restricao:  x1 <= 1                              restricao:  x2 <= 1                                           
+restricao:  x3 <= 1                              restricao:  x4 <= 1
+restricao:  x5 <= 1                              restricao:  x6 <= 1   
+restricao:  x7 <= 1                              restricao:  x8 <= 1 """
+
+    exemplo6 = """ Investimentos por ano 
+
+problema: inteiro
+
+max: 20x1 + 15x2 + 34x3 + 17x4 + 56x5 + 76x6 + 29x7
+
+restricao: 12x1 + 54x2 + 65x3 + 38x4 + 52x5 + 98x6 + 15x7 <= 200             ANO 0
+restricao: 34x1 + 94x2 + 28x3 + 0x4 + 21x5 + 73x6 + 48x7 <= 250             ANO 1 
+restricao: 12x1 + 67x2 + 49x3 + 8x4 + 42x5 + 25x6 + 53x7 <= 150            ANO 2
+
+restricao:  x1 <= 1
+restricao:  x2 <= 1                                           restricao:  x3 <= 1 
+restricao:  x4 <= 1                                           restricao:  x5 <= 1 
+restricao:  x6 <= 1                                           restricao:  x7 <= 1 
+restricao:  x7 <= 1 """
 
     dict_exemplos = {"1) Modelo Básico":exemplo1,
                     "2) Problema de Transporte":exemplo2,
                     "3) Programação Binária":exemplo3,
                     "4) Designação":exemplo4,
-                    "5) Terceirizar ou não?":exemplo5}
+                    "5) Postes nas ruas":exemplo5,
+                    "6) Investimentos":exemplo6}
 
     return dict_exemplos[exemplo_escolhido]
 
@@ -372,10 +400,13 @@ def solve_problem(df, coef_objetivo, metodo, objetivo):
 
 def main():
 
-    st.title("😾 Morte ao Solver do Excel 😾")
+    st.title("🙀 Mais fácil que o Solver do Excel 🙀")
+    st.title("😹 Mais bonito que o Lindo 😹")
     st.sidebar.subheader("😸 Exemplos")
 
-    exemplo = st.sidebar.selectbox("Selecione:",("1) Modelo Básico","2) Problema de Transporte","3) Programação Binária","4) Designação","5) Terceirizar ou não?"))
+    exemplo = st.sidebar.selectbox("Selecione:",("1) Modelo Básico", "2) Problema de Transporte",
+                                            "3) Programação Binária", "4) Designação",
+                                            "5) Postes nas ruas", "6) Investimentos"))
 
     st.sidebar.subheader("""😺 Regras de Uso
     🐈 Use espaços entre os sinais de operação e as variáveis;
@@ -390,6 +421,10 @@ def main():
     texto_input = st.text_area('Preencha o modelo com os termos e sinais SEPARADOS POR ESPAÇOS',value = gerar_exemplos(exemplo), height = 500)
 
     df, coef_objetivo, objetivo, metodo  = processar_input(texto_input)
+
+    if st.button("Resolver"): 
+
+        solve_problem(df, coef_objetivo, metodo, objetivo)
 
     if metodo == 'Programação Linear':
         
@@ -415,7 +450,7 @@ def main():
     st.subheader("Restrições: ")
     st.dataframe(df)
     
-    st.markdown('<p class="big-font">😺 PODE 😼 MANDAR 😾 BALA !!!</p>', unsafe_allow_html=True)
+    #if st.button("Capturar Pokemon"): st.write("PIKACHU")
     #data = create_data_model(df, funcao_objetivo)
 
     #for i,row in enumerate(df['restricao']):
@@ -427,10 +462,6 @@ def main():
     #    st.write(str(i+1),"° restrição: ",math_exp)
     #    #st.write(df['inequacao'].iloc[i])
     #    math_exp = Eq(math_exp, 0)
-
-    if st.button("Resolver"): 
-
-        solve_problem(df, coef_objetivo, metodo, objetivo)
         
     
 if __name__ == "__main__":
