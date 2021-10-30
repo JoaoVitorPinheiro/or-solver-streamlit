@@ -149,18 +149,32 @@ restricao:  x4 <= 1                                           restricao:  x5 <= 
 restricao:  x6 <= 1                                           restricao:  x7 <= 1 
 restricao:  x7 <= 1 """
 
+    exemplo7 = """ Exemplo de PL 
+
+problema: linear
+
+min: 2x1 + 1x2
+
+restricao: x1 - x2 <= 1
+restricao: 3x1 + 2x2 <= 12
+restricao: 2x1 + 3x2 >= 3
+restricao: -2x1 + 3x2 <= 9"""
+
+
+
     dict_exemplos = {"1) Modelo Básico":exemplo1,
                     "2) Problema de Transporte":exemplo2,
                     "3) Programação Binária":exemplo3,
                     "4) Designação":exemplo4,
                     "5) Postes nas ruas":exemplo5,
-                    "6) Investimentos":exemplo6}
+                    "6) Investimentos":exemplo6,
+                    "7) Exemplo de PL":exemplo7}
 
     return dict_exemplos[exemplo_escolhido]
 
 def processar_input(texto):
 
-    regra = r'(?:(?:restricao:|r:)(?:(?<!\+|\-|\.)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,4}[\+\-\s])+(?:[=><]{1,2}[\-\+\s]+\d+(?!\|;\w|\d)))|(?:(?:min:|max:)(?:(?<!\+|\-)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,3}[\+\-\s])+(?!\|;\w|\d))|(?:(?:problema:|p:)(?:(?<!\+|\-)[\+\-\s](?:inteiro|linear|int|lin)[\+\-\s])+(?!\|;\w|\d))'
+    regra = r"(?:(?:restricao:|r:)(?:(?<!\+|\-|\.)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,4}[\+\-\s])+(?:[=><]{1,2}[\-\+\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))+(?!\|;\w|\d)))|(?:(?:min:|max:)(?:(?<!\+|\-)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,3}[\+\-\s])+(?!\|;\w|\d))|(?:(?:problema:|p:)(?:(?<!\+|\-)[\+\-\s](?:inteiro|linear|int|lin)[\+\-\s]?)+(?!\|;\w|\d))"
 
     doc = texto
 
@@ -345,7 +359,7 @@ def solve_problem(df, coef_objetivo, metodo, objetivo, decimais):
         super_solver = pywraplp.Solver.CreateSolver('GLOP')
 
         for j in range(data['num_vars']):
-            x[j] = super_solver.NumVar(0, super_solver.infinity(), 'x%i' % (j+1))
+            x[j] = super_solver.NumVar(0.0, super_solver.infinity(), 'x%i' % (j+1))
 
     elif metodo == 'Programação Inteira':
 
@@ -355,7 +369,8 @@ def solve_problem(df, coef_objetivo, metodo, objetivo, decimais):
             x[j] = super_solver.IntVar(0, super_solver.infinity(), 'x%i' % (j+1))
 
     st.write('Número de Variáveis =', super_solver.NumVariables())
-
+    
+    # Restrições de limite de valor das restrições
     for i in range(data['num_constraints']):
        
         if data['inequacao'][i] == ">=":
@@ -363,7 +378,7 @@ def solve_problem(df, coef_objetivo, metodo, objetivo, decimais):
             limite_superior = super_solver.infinity()
             
         elif data['inequacao'][i] == "<=":
-            limite_inferior = 0
+            limite_inferior = -super_solver.infinity()
             limite_superior = data['bounds'][i]
 
         else: # data['inequacao'][i] == "=="
@@ -400,12 +415,6 @@ def solve_problem(df, coef_objetivo, metodo, objetivo, decimais):
         
         variaveis = np.array(df.columns[:-2])
 
-        #latex_exp = variaveis[0] 
-        #lista = [str("+ "+item) if item >= 0 else str(" "+item) for item in variaveis[1:-2]]
-        #st.write(lista)
-        #latex_exp = latex_exp + " ".join(lista)
-        #st.latex(latex_exp)
-
         for j in range(data['num_vars']):
             st.write(variaveis[j], ' = ', 
                     round(x[j].solution_value(), decimais))
@@ -414,8 +423,36 @@ def solve_problem(df, coef_objetivo, metodo, objetivo, decimais):
         st.write('Problema resolvido em %d iterações' % super_solver.iterations())
         st.write('Problema resolvido em %d nó(s) de branch-and-bound' % super_solver.nodes())
 
+    elif status == pywraplp.Solver.FEASIBLE:
+        st.warning('😸 Solução viável encontrada 😸')
+
+        st.write('Valor da Função Objetivo =', 
+                round(super_solver.Objective().Value(),decimais))
+        
+        variaveis = np.array(df.columns[:-2])
+
+        for j in range(data['num_vars']):
+            st.write(variaveis[j], ' = ', 
+                    round(x[j].solution_value(), decimais))
+            
+        st.write('Problema resolvido em %f ms' % super_solver.wall_time())
+        st.write('Problema resolvido em %d iterações' % super_solver.iterations())
+        st.write('Problema resolvido em %d nó(s) de branch-and-bound' % super_solver.nodes())
+    
+    elif status == pywraplp.Solver.INFEASIBLE:
+        st.warning('😿 Não há solução viável pra essa bronca 😿')
+    
+    elif status == pywraplp.Solver.UNBOUNDED:
+        st.warning('🙀 O modelo é um problema ilimitado!!! 🙀')
+
+    elif status == pywraplp.Solver.ABNORMAL:
+        st.warning('😿 Algum erro desconhecido e não conseguimos achar uma solução 😿')
+
+    elif status == pywraplp.Solver.MODEL_INVALID:
+        st.warning('😾 Modelo Inválido 😾')
+
     else:
-        st.warning('😿 Não há solução viável pra essa bronca😿')
+        st.warning('😿 Não há solução pra essa bronca😿')
 
 def main():
 
@@ -424,7 +461,8 @@ def main():
 
     exemplo = st.sidebar.selectbox("Veja um exemplo modelado:",("1) Modelo Básico", "2) Problema de Transporte",
                                             "3) Programação Binária", "4) Designação",
-                                            "5) Postes nas ruas", "6) Investimentos"))
+                                            "5) Postes nas ruas", "6) Investimentos",
+                                            "7) Exemplo de PL"))
                                         
     with st.expander("😺 Instruções de Uso"):
         st.markdown("""
@@ -467,14 +505,15 @@ def main():
                 r: x1 + 2x2 = 10 """,
     unsafe_allow_html = True)
 
-        st.info("Na aba lateral há exemplos de modelos de programação distintos com formas de organização possíveis. ")
+        st.info("Na aba lateral há exemplos de modelos de programação que apresentam algumas possibilidades e recursos. ")
         st.info("Clique em *Resolver* para solucionar seu modelo")
+
     st.sidebar.subheader("😸 Arredondamento:")
-    decimais = int(st.sidebar.select_slider('Selecione o número de casas para as respostas',
+    decimais = int(st.sidebar.select_slider('Selecione a precisão padrão:',
             options = ['1', '2', '3', '4', '5', '6','7','8','9','10'],
             value = '5'))
 
-    st.sidebar.subheader("🐯 白玉龙的项目")
+    st.sidebar.write("🐯 [Contato para sugestões e dúvidas](https://www.linkedin.com/in/jvpro/)")
 
     texto_input = st.text_area('Preencha no quadro abaixo o modelo com os termos e sinais SEPARADOS POR ESPAÇOS:',value = gerar_exemplos(exemplo), height = 500)
 
@@ -504,6 +543,12 @@ def main():
 
     st.subheader("Restrições: ")
     st.dataframe(df)
+
+    latex_exp = (objetivo+"imizar Z =").capitalize() 
+    lista = [str(item) for item in df_obj.columns]
+    #st.write(lista)
+    latex_exp = latex_exp + "+".join(lista)
+    st.latex(latex_exp)
         
 if __name__ == "__main__":
     set_streamlit()
