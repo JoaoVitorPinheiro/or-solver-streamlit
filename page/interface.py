@@ -14,14 +14,15 @@ from IPython.display import display, Math, Latex
 # http://www.universalteacherpublications.com/univ/ebooks/or/Ch1/techniq.htm
 # https://towardsdatascience.com/optimization-in-transportation-problem-f8137044b371
 
-# 我听见 我忘记; 我看见 我记住; 我做 我了解
+# 我听见 我忘记; 我看见 我记住; 我做 我了解 
 
 def set_streamlit():
     st.set_page_config(
-    page_title = "𝖱esolved𝖮𝖱",
+    page_title = "solvedOR",
     page_icon = "📉",
     layout = "wide",)
 
+    # Checar esse html 
     st.markdown("""
     <style>
     .big-font {
@@ -30,6 +31,14 @@ def set_streamlit():
     </style>
     """, unsafe_allow_html=True)
 
+    hide_streamlit_style = """
+    <style>
+    .css-1y0tads {padding-top: 0rem;}
+    </style>
+
+    """
+    st.markdown(hide_streamlit_style, unsafe_allow_html = True)
+    
     return "initializing..."
 
 def gerar_exemplos(exemplo_escolhido):
@@ -325,7 +334,7 @@ def create_data_model(df, coef_objetivo):
 
     return data
 
-def solve_problem(df, coef_objetivo, metodo, objetivo):
+def solve_problem(df, coef_objetivo, metodo, objetivo, decimais):
 
     data = create_data_model(df, coef_objetivo)
 
@@ -373,97 +382,131 @@ def solve_problem(df, coef_objetivo, metodo, objetivo):
     for j in range(data['num_vars']):
         objective.SetCoefficient(x[j], data['obj_coeffs'][j])
 
-    if objetivo=='max':    
+    if objetivo == 'max':    
         objective.SetMaximization()
 
     else:   
         objective.SetMinimization()
 
     status = super_solver.Solve()
-
+    
     if status == pywraplp.Solver.OPTIMAL:
 
-        st.markdown('<p class="big-font">😻 Solução ótima encontrada!!! 😻</p>', unsafe_allow_html=True)
-        st.write('Valor Otimizado da Função Objetivo =', super_solver.Objective().Value())
+        st.balloons()
+        st.success('😻 Solução ótima encontrada!!! 😻')
+        
+        st.write('Valor Otimizado da Função Objetivo =', 
+                round(super_solver.Objective().Value(),decimais))
         
         variaveis = np.array(df.columns[:-2])
 
-        for j in range(data['num_vars']):
-            st.write(variaveis[j], ' = ', x[j].solution_value())
+        #latex_exp = variaveis[0] 
+        #lista = [str("+ "+item) if item >= 0 else str(" "+item) for item in variaveis[1:-2]]
+        #st.write(lista)
+        #latex_exp = latex_exp + " ".join(lista)
+        #st.latex(latex_exp)
 
+        for j in range(data['num_vars']):
+            st.write(variaveis[j], ' = ', 
+                    round(x[j].solution_value(), decimais))
+            
         st.write('Problema resolvido em %f ms' % super_solver.wall_time())
         st.write('Problema resolvido em %d iterações' % super_solver.iterations())
-        st.write('Problema resolvido em %d branch-and-bound nodes' % super_solver.nodes())
+        st.write('Problema resolvido em %d nó(s) de branch-and-bound' % super_solver.nodes())
 
     else:
-        st.markdown('<p class="big-font">😿 Não achamos solução 😿</p>', unsafe_allow_html=True)
+        st.warning('😿 Não há solução viável pra essa bronca😿')
 
 def main():
 
     st.title("🙀 Mais fácil que o Solver do Excel 🙀")
-    st.title("😹 Mais bonito que o Lindo 😹")
     st.sidebar.subheader("😸 Exemplos")
 
-    exemplo = st.sidebar.selectbox("Selecione:",("1) Modelo Básico", "2) Problema de Transporte",
+    exemplo = st.sidebar.selectbox("Veja um exemplo modelado:",("1) Modelo Básico", "2) Problema de Transporte",
                                             "3) Programação Binária", "4) Designação",
                                             "5) Postes nas ruas", "6) Investimentos"))
+                                        
+    with st.expander("😺 Instruções de Uso"):
+        st.markdown("""
+        - 🐈 Use espaços entre os sinais de operação e as variáveis;
+        - 🐈‍⬛ Os coeficientes das variáveis devem estar "colados" nas variáveis (vide exemplos);
+        - 🐅 Não existe ordem certa para definir o modelo, contanto que tudo seja definido;
+        - 🐆 Variáveis devem ser mantidas no lado esquerdo;
+        - 🦖 Não usar frações;
+        - 🦕 Formas decimais são representadas com " . " (ponto) ao invés de " , " vírgula.""")
 
-    st.sidebar.subheader("""😺 Regras de Uso
-    🐈 Use espaços entre os sinais de operação e as variáveis;
-    🐈‍⬛ Os coeficientes das variáveis devem estar "colados" nas variáveis (vide exemplos);
-    🐅 Não existe ordem certa para definir o modelo, contanto que tudo seja definido;
-    🐆 Variáveis devem ser mantidas no lado esquerdo;
-    🦖 Não usar frações;
-    🦕 Formas decimais são representadas com '.' (ponto) ao invés de vírgula.""")
+    with st.expander("😺 Sintaxe dos Operadores"):
+        st.markdown("""
+                    ## Tipo de Problema 
+            #### defina o problema com esse padrão
+                problema: linear
+            #### ou de forma abreviada
+                p: lin
+            #### para programação inteira, utilize:
+                problema: inteiro
+            #### ou de forma abreviada
+                p: int
+            deve ser declarado apenas uma vez 
+            ## Função Objetivo:
+            #### definindo o objetivo como maximizar: 
+                max: 	
+            #### para minimizar, utilize:
+                min: 
+            #### adicione os termos como no exemplo abaixo:
+                2x1 + 3x2 + 4x3 + 5x4
+            #### ao final, deve ser algo no formato: 
+                min: 2x1 + 3x2 + 4x3 + 5x4
+            deve ser declarada apenas uma função objetivo
+            ## Restrições:
+            #### definindo a restrição: 
+                restricao: x1 + 2x2 <= 20 	
+            #### de forma abreviada, utilize:
+                r: x1 + 2x2 <= 20 
+            #### outros sinais :
+                r: x1 + x2 >= 1
+                r: x1 + 2x2 = 10 """,
+    unsafe_allow_html = True)
 
-    st.sidebar.write("🐯 白玉龙的项目")
+        st.info("Na aba lateral há exemplos de modelos de programação distintos com formas de organização possíveis. ")
+        st.info("Clique em *Resolver* para solucionar seu modelo")
+    st.sidebar.subheader("😸 Arredondamento:")
+    decimais = int(st.sidebar.select_slider('Selecione o número de casas para as respostas',
+            options = ['1', '2', '3', '4', '5', '6','7','8','9','10'],
+            value = '5'))
 
-    texto_input = st.text_area('Preencha o modelo com os termos e sinais SEPARADOS POR ESPAÇOS',value = gerar_exemplos(exemplo), height = 500)
+    st.sidebar.subheader("🐯 白玉龙的项目")
+
+    texto_input = st.text_area('Preencha no quadro abaixo o modelo com os termos e sinais SEPARADOS POR ESPAÇOS:',value = gerar_exemplos(exemplo), height = 500)
 
     df, coef_objetivo, objetivo, metodo  = processar_input(texto_input)
 
     if st.button("Resolver"): 
-
-        solve_problem(df, coef_objetivo, metodo, objetivo)
-
+        solve_problem(df, coef_objetivo, metodo, objetivo, decimais)
+    
     if metodo == 'Programação Linear':
-        
         st.subheader("Programação Linear:")
         st.write(f'(PL): engloba problemas de otimização nos quais a função objetivo e as restrições são todas lineares.')
      
     elif metodo == 'Programação Inteira':
-        # REVISAR
-        st.subheader("Programação Inteira:")
+        st.subheader("Programação Inteira:")                   # REVISAR
         st.write(f'(PI): engloba problemas de otimização nos quais a função objetivo e as restrições são parcialmente ou totalmente pertencentes ao conjunto dos números inteiros.')
 
-    a_series = pd.Series(coef_objetivo, index=df.columns[:-2])
+    a_series = pd.Series(coef_objetivo, index = df.columns[:-2])
     
-    df_obj = pd.DataFrame(columns=df.columns[:-2])
+    df_obj = pd.DataFrame(columns = df.columns[:-2])
     df_obj = df_obj.append(a_series, ignore_index=True)
 
     st.subheader("Objetivo: ")
-    st.write((objetivo+"imizar").upper())
+    st.write((objetivo+"imizar").lower())
 
     st.subheader("Função Objetivo: ")
     st.dataframe(df_obj)
 
     st.subheader("Restrições: ")
     st.dataframe(df)
-    
-    #if st.button("Capturar Pokemon"): st.write("PIKACHU")
-    #data = create_data_model(df, funcao_objetivo)
 
-    #for i,row in enumerate(df['restricao']):
-
-    #    #x, y = symbols('x y')
-    #    expression = row
-    #    #Use sympy.sympify() method
-    #    math_exp = sympify(expression)
-    #    st.write(str(i+1),"° restrição: ",math_exp)
-    #    #st.write(df['inequacao'].iloc[i])
-    #    math_exp = Eq(math_exp, 0)
+    st.title("😹 Mais bonito que o Lindo 😹")
         
-    
 if __name__ == "__main__":
     set_streamlit()
     main()
