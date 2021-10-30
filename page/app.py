@@ -419,7 +419,7 @@ def solve_problem(df, coef_objetivo, metodo, objetivo, decimais):
 
 def main():
 
-    st.title("🙀 Mais fácil que o Solver do Excel 🙀")
+    st.title("🙀 Solver de Programação Matemática 🙀")
     st.sidebar.subheader("😸 Exemplos")
 
     exemplo = st.sidebar.selectbox("Veja um exemplo modelado:",("1) Modelo Básico", "2) Problema de Transporte",
@@ -504,8 +504,6 @@ def main():
 
     st.subheader("Restrições: ")
     st.dataframe(df)
-
-    st.title("😹 Mais bonito que o Lindo 😹")
         
 if __name__ == "__main__":
     set_streamlit()
