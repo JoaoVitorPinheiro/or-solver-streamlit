@@ -43,9 +43,7 @@ def set_streamlit():
 
 def gerar_exemplos(exemplo_escolhido):
 
-    exemplo1 = """Modelo Simples de Programação Linear
-
-problema: linear
+    exemplo1 = """problema: linear
 
 max: 8x1 + 10x2
 
@@ -55,9 +53,7 @@ restricao: 0.6x1 + 0.4x2 <= 145
 restricao:  x1 >= 30                                            restricao: x1 <= 150
 restricao:  x2 >= 40                                            restricao: x2 <= 200 """
 
-    exemplo2 = """Transporte
-
-problema: inteiro
+    exemplo2 = """problema: inteiro
 
 min: x111 + 2x121 + 3x131 + 2x141 + 2x112 + 4x122 + 6x132 + 4x142 + 2x211 + 4x221 + 1x231 + 2x241 + 4x212 + 8x222 + 2x232 + 4x242 + 1x311 + 3x321 + 5x331 + 3x341
 
@@ -71,27 +67,25 @@ r: x121 + x122 + x221 + x222 + x321 = 150
 r: x131 + x132 + x231 + x232 + x331 = 400
 r: x141 + x142 + x241 + x242 + x341 = 100 """
     
-    exemplo3 = """Binária
+    exemplo3 = """p: inteiro
 
-p: inteiro
-
-MAX: 9x1 + 5x2 + 6x3 + 4x4
+max: 9x1 + 5x2 + 6x3 + 4x4
 
 r: 6x1 + 3x2 + 5x3 + 2x4 <= 10
 r: x3 + x4 <= 1 
 
-#Restrições que envolvam variáveis de decisão do lado direito do sinal da equação/inequação do tipo 
-r: x2 <= x4 + 1 devem ser reescritas como: (só para manter as variáveis na esquerda)
+#Restrições que envolvam variáveis de decisão do lado direito do sinal da equação/inequação devem ser reescritas como:
+
 r: x1 - x3 <= 1                                        r: x2 - x4 <= 1        
+ (só para manter as variáveis na esquerda)
+
  (checar tabela abaixo para conferir o registro da restrição)
 
 #Exemplo de como criar variáveis binárias
 restricao: x1 <= 1                                                restricao: x2 <= 1 
-restricao: x3 <= 1                                                restricao: x4 <= 1  """
+restricao: x3 <= 1                                                restricao: x4 <= 1   """
 
-    exemplo4 = """Designação
-
-problema: inteiro
+    exemplo4 = """problema: inteiro
 
 MIN:  50x11 + 50x12 + 0x13 + 20x14
         + 70x21 + 40x22 + 20x23 + 30x24                 
@@ -110,9 +104,7 @@ restricao: x12 + x22 + x32 + x42 = 1
 restricao: x13 + x23 + x33 + x43 = 1
 restricao: x14 + x24 + x34 + x44 = 1 """
  
-    exemplo5 = """Postes nas ruas
-
-problema: inteiro
+    exemplo5 = """problema: inteiro
 
 min: x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 
 
@@ -133,9 +125,7 @@ restricao:  x3 <= 1                              restricao:  x4 <= 1
 restricao:  x5 <= 1                              restricao:  x6 <= 1   
 restricao:  x7 <= 1                              restricao:  x8 <= 1 """
 
-    exemplo6 = """ Investimentos por ano 
-
-problema: inteiro
+    exemplo6 = """problema: inteiro
 
 max: 20x1 + 15x2 + 34x3 + 17x4 + 56x5 + 76x6 + 29x7
 
@@ -149,9 +139,7 @@ restricao:  x4 <= 1                                           restricao:  x5 <= 
 restricao:  x6 <= 1                                           restricao:  x7 <= 1 
 restricao:  x7 <= 1 """
 
-    exemplo7 = """ Exemplo de PL 
-
-problema: linear
+    exemplo7 = """problema: linear
 
 min: 2x1 + 1x2
 
@@ -404,7 +392,7 @@ def solve_problem(df, coef_objetivo, metodo, objetivo, decimais):
         objective.SetMinimization()
 
     status = super_solver.Solve()
-    
+    #st.write(status)
     if status == pywraplp.Solver.OPTIMAL:
 
         st.balloons()
