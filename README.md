@@ -1,10 +1,6 @@
 # Introdução 
-O Super Solver pretende automatizar a resolução de problemas de pesquisa operacional
-
-# Descrição
-## **Instalar**
-### **1. Pip + Zip** (mais simples, sem garantia de versão)
+Link para a aplicação: https://share.streamlit.io/joaovitorpinheiro/or-solver-streamlit/main/page/app.py#programa-o-linear
 
 # Contribuidores
-
+JV
 ## Contribuidores passados
