@@ -162,7 +162,7 @@ restricao: -2x1 + 3x2 <= 9"""
 
 def processar_input(texto):
 
-    regra = r"(?:(?:restricao:|r:)(?:(?<!\+|\-|\.)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,4}[\+\-\s])+(?:[=><]{1,2}[\-\+\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))+(?!\|;\w|\d)))|(?:(?:min:|max:)(?:(?<!\+|\-)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,3}[\+\-\s])+(?!\|;\w|\d))|(?:(?:problema:|p:)(?:(?<!\+|\-)[\+\-\s](?:inteiro|linear|int|lin)[\+\-\s]?)+(?!\|;\w|\d))"
+    regra = r"(?:(?:restricao:|r:)(?:(?<!\+|\-|\.)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,6}[\+\-\s])+(?:[=><]{1,2}[\-\+\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))+(?!\|;\w|\d)))|(?:(?:min:|max:)(?:(?<!\+|\-)[\+\-\s]+(?:(?:\d+\.\d+)|(?:\d{0,9}))x\d{1,6}[\+\-\s])+(?!\|;\w|\d))|(?:(?:problema:|p:)(?:(?<!\+|\-)[\+\-\s](?:inteiro|linear|int|lin)[\+\-\s]?)+(?!\|;\w|\d))"
 
     doc = texto
 
@@ -534,7 +534,7 @@ def main():
 
     latex_exp = (objetivo+"imizar Z =").capitalize() 
     lista = [str(item) for item in df_obj.columns]
-    #st.write(lista)
+    st.write(lista)
     latex_exp = latex_exp + "+".join(lista)
     st.latex(latex_exp)
         
