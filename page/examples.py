@@ -91,9 +91,9 @@ restricao:  x7 <= 1                              restricao:  x8 <= 1
 
 max: 20x1 + 15x2 + 34x3 + 17x4 + 56x5 + 76x6 + 29x7
 
-restricao: 12x1 + 54x2 + 65x3 + 38x4 + 52x5 + 98x6 + 15x7 <= 200             ANO 0
+restricao: 12x1 + 54x2 + 65x3 + 38x4 + 52x5 + 98x6 + 15x7 <= 200            ANO 0
 restricao: 34x1 + 94x2 + 28x3 + 0x4 + 21x5 + 73x6 + 48x7 <= 250             ANO 1 
-restricao: 12x1 + 67x2 + 49x3 + 8x4 + 42x5 + 25x6 + 53x7 <= 150            ANO 2
+restricao: 12x1 + 67x2 + 49x3 + 8x4 + 42x5 + 25x6 + 53x7 <= 150             ANO 2
 
 restricao:  x1 <= 1
 restricao:  x2 <= 1                                           restricao:  x3 <= 1 
