@@ -11,7 +11,7 @@ from models import processar_input, solve_problem
 
 def main():
     
-    st.title("🙀 Ferramenta de Pesquisa Operacional 🙀")
+    st.title("Ferramenta de Pesquisa Operacional")
                                         
     with st.expander("😺 Instruções de Uso"):
         st.markdown("""
@@ -62,12 +62,12 @@ def main():
 
         st.info("Na aba lateral há exemplos de modelos de programação que apresentam algumas possibilidades e recursos. ")
         st.info("Clique em *Resolver* para solucionar seu modelo")
-
-    st.sidebar.write("🐯 [Contato para sugestões e dúvidas](https://www.linkedin.com/in/jvpro/)")
     
-    st.sidebar.subheader("😸 Exemplos")
+    #st.sidebar.subheader("😸 Exemplos")
     
-    exemplo = st.sidebar.selectbox("Veja um exemplo modelado:",
+    with st.expander("😺 Lousa de Exemplos"):
+        
+        exemplo = st.selectbox("Veja um exemplo modelado:",
                                    ("1) Modelo Básico",
                                     "2) Problema de Transporte",
                                     "3) Programação Binária",
@@ -76,10 +76,7 @@ def main():
                                     "6) Investimentos",
                                     "7) Exemplo de PL",
                                     "8) Rota Turística"))
-    
-    
-    with st.expander("😺 Lousa de Exemplos"):
-    
+        
         exemplo_escolhido = st.text_area('Navegue por exemplos de problemas modelados na barra ao lado!',
                                 value = gerar_exemplos(exemplo),
                                 height = 500)
@@ -123,7 +120,9 @@ def main():
     #st.write(lista)
     latex_exp = latex_exp + "+".join(lista)
     #st.latex(latex_exp)
-        
+    
+    st.write("🐯 [Contato para sugestões e dúvidas](https://www.linkedin.com/in/jvpro/)")    
+    
 if __name__ == "__main__":
     set_streamlit()
     main()

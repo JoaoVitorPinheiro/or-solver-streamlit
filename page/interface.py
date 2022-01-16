@@ -3,8 +3,7 @@ import streamlit as st
 def set_streamlit():
     st.set_page_config(
     page_title = "solvedOR",
-    page_icon = "📉",
-    layout = "wide",)
+    page_icon = "📉",)
 
     # Checar esse html 
     st.markdown("""
